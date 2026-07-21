@@ -1,0 +1,12 @@
+# White-light polarised brightness (pB) for rho_bin.h5.
+# Put the file in data/, then:  rrt-wl examples/configs/rho_bin_wl.yaml
+data:
+  density: data/rho_bin.h5
+  fmt: mas
+  ne_scale: 1.0e+8
+  r_range: [1.0, 15.0]
+image: {Npix: 400, Rmax: 6.0}
+views:
+  - {label: Side view, phi_obs_deg: -70, B0_deg: 0}
+white_light: {Rocc: 1.0, U_LIMB: 0.63, SIGMA_T: 7.95e-26, nrgf: false}
+output_dir: out/rho_bin_wl

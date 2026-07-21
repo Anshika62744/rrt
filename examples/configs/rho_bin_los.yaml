@@ -1,0 +1,16 @@
+# Single line-of-sight diagnostics for rho_bin.h5 + t_bin.h5.
+# Put both files in data/, then:  rrt-los examples/configs/rho_bin_los.yaml
+data:
+  density: data/rho_bin.h5
+  temperature: data/t_bin.h5
+  fmt: mas
+  ne_scale: 1.0e+8
+  t_scale: 2.807e+7
+  r_range: [1.03, 5.0]
+response: data/aia_temp_response_chiantifix.npz
+wavelength: 171
+image: {Npix: 256, Rmax: 3.0}
+views:
+  - {label: Side view, phi_obs_deg: -70, B0_deg: 0}
+los: {probes: [[1.5, 0.3], [2.5, 0.0]]}
+output_dir: out/rho_bin_los
