@@ -1,0 +1,18 @@
+# Single line-of-sight diagnostics for a synthetic FULL DISK.
+#   python examples/generate_synthetic_data.py
+#   rrt-los examples/configs/los_fulldisk_synth.yaml
+data:
+  density: examples/data/synth_fulldisk.h5
+  input_case: auto
+response: examples/data/synth_response.npz
+wavelength: 171
+image:
+  Npix: 256
+  Rmax: 5.0
+views:
+  - {label: Side view, phi_obs_deg: -70, B0_deg: 0}
+los:
+  probes:
+    - [1.5, 0.3]
+    - [2.5, 0.0]
+output_dir: out/los_fulldisk_synth

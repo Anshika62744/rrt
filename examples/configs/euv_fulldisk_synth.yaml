@@ -1,0 +1,15 @@
+# EUV for a synthetic FULL DISK with a real temperature field.
+#   python examples/generate_synthetic_data.py
+#   rrt-euv examples/configs/euv_fulldisk_synth.yaml
+data:
+  density: examples/data/synth_fulldisk.h5   # single file, holds vars/rho + vars/T
+  input_case: auto                           # → single (temperature auto-probed)
+response: examples/data/synth_response.npz
+wavelength: 171
+image:
+  Npix: 256
+  Rmax: 1.5
+views:
+  - {label: Equatorial, phi_obs_deg: -70, B0_deg: 0}
+  - {label: Pole,       phi_obs_deg: -70, B0_deg: 89}
+output_dir: out/euv_fulldisk_synth

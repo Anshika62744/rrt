@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rrt"
+version = "0.1.0"
+description = "Rectilinear ray-tracing of spherical MHD cubes into synthetic EUV/AIA, white-light pB, and single line-of-sight diagnostics."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Anshika Singh", email = "as4883@njit.edu" },
+]
+keywords = [
+    "solar physics", "corona", "CME", "forward modeling", "ray tracing",
+    "EUV", "AIA", "white light", "Thomson scattering", "MHD",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Intended Audience :: Science/Research",
+]
+# NOTE: conservative version FLOORS only. Exact pins deferred until the maintainer
+# approves them. Tested on Python 3.11 with the versions in environment.yml.
+dependencies = [
+    "numpy>=1.23",
+    "numba>=0.57",
+    "h5py>=3.7",
+    "matplotlib>=3.6",
+    "sunpy>=4.1",          # SDO/AIA colormaps + sub-Earth L0/B0; imports are defensive
+    "astropy>=5.1",        # times/units for observer-from-time
+    "pyyaml>=6.0",         # CLI config files
+    "imageio-ffmpeg>=0.4", # time-evolution movie encoding
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+notebook = ["jupyter", "ipykernel"]
+
+[project.scripts]
+rrt-euv = "rrt.cli:main_euv"
+rrt-wl  = "rrt.cli:main_wl"
+rrt-los = "rrt.cli:main_los"
+
+[project.urls]
+Homepage = "https://github.com/Anshika62744/rrt"
+Repository = "https://github.com/Anshika62744/rrt"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

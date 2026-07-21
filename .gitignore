@@ -1,0 +1,39 @@
+# ── Large / generated data (never commit) ───────────────────────────────────
+data/*.h5
+data/*.hdf5
+*.h5
+*.hdf5
+# keep the small response table
+!data/aia_temp_response_chiantifix.npz
+
+# generated synthetic example data
+examples/data/
+
+# ── Rendered outputs ─────────────────────────────────────────────────────────
+frames_*/
+*.mp4
+*.gif
+synthetic_*.png
+out/
+*.png
+!docs/figures/*.png
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# ── OS / editor ──────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+
+# local machine testing (not committed)
+local_test/

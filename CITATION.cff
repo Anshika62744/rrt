@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+title: "rrt — Rectilinear Ray Tracing of MHD cubes into synthetic observables"
+message: "If you use this software, please cite it."
+type: software
+authors:
+  - given-names: Anshika
+    family-names: Singh
+    email: as4883@njit.edu
+repository-code: "https://github.com/Anshika62744/rrt"
+license: MIT
+version: 0.1.0
+keywords:
+  - solar physics
+  - corona
+  - CME
+  - forward modeling
+  - ray tracing
+  - EUV
+  - white light
+  - Thomson scattering
+  - MHD
+references:
+  - type: article
+    authors:
+      - family-names: Siddon
+        given-names: Robert L.
+    title: "Fast calculation of the exact radiological path for a three-dimensional CT array"
+    journal: "Medical Physics"
+    volume: 12
+    year: 1985
+    start: 252

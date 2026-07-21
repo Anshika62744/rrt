@@ -1,0 +1,16 @@
+# Synthetic EUV/AIA for a real ARMS wedge snapshot (density-only → isothermal).
+#   rrt-euv examples/configs/euv_wedge.yaml
+data:
+  density: data/mhd_data_0220.h5   # ARMS wedge; no temperature in file
+  input_case: auto                 # → density_only → isothermal t_iso
+  t_iso: 1.0e+6
+  nghost: auto
+response: data/aia_temp_response_chiantifix.npz
+wavelength: 171
+image:
+  Npix: 512
+  Rmax: 1.5
+views:
+  - {label: Side view, phi_obs_deg: -70, B0_deg: 0}
+  - {label: Nose view, phi_obs_deg: -70, B0_deg: 89}
+output_dir: out/euv_wedge

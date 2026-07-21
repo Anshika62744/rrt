@@ -1,0 +1,14 @@
+# Runtime dependencies for rrt (mirror of pyproject.toml). Floors only; the
+# package was developed and tested on Python 3.11. Prefer `pip install -e .`.
+numpy>=1.23
+numba>=0.57
+h5py>=3.7
+matplotlib>=3.6
+sunpy>=4.1
+astropy>=5.1
+pyyaml>=6.0
+imageio-ffmpeg>=0.4
+
+# For running the example notebooks:
+jupyter
+ipykernel
