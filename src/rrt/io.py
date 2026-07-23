@@ -34,6 +34,11 @@ _TWO_PI = 2.0 * np.pi
 _ARMS_KEYS = dict(r="coords/r", theta="coords/theta", phi="coords/phi", rho="vars/rho")
 # candidate temperature datasets to probe for the "single file" case
 _T_CANDIDATES = ("vars/T", "vars/temperature", "vars/Temp", "vars/te", "vars/temp")
+# accepted temperature_units spellings → canonical mode. The docs quote the short
+# forms ("K", "MK", "log10"); the long ones are the internal names.
+_T_MODES = {"k": "kelvin", "kelvin": "kelvin",
+            "mk": "megakelvin", "megakelvin": "megakelvin",
+            "log10": "log10", "log": "log10"}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -216,7 +221,13 @@ def _to_number_density(rho, units, override, mu, m_p, meta):
 def _to_kelvin(vals, units, override, meta):
     finite = vals[np.isfinite(vals) & (vals > 0)]
     med = np.median(finite) if finite.size else 0.0
-    mode = override
+    mode = str(override).lower()
+    if mode != "auto":
+        if mode not in _T_MODES:
+            raise ValueError(
+                f"temperature_units={override!r} not recognised; choose from "
+                f"auto, K, MK, log10")
+        mode = _T_MODES[mode]
     if mode == "auto":
         u = units.lower()
         if "log" in u:

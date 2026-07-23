@@ -16,7 +16,6 @@ frames_*/
 synthetic_*.png
 out/
 *.png
-!docs/figures/*.png
 
 # ── Python ───────────────────────────────────────────────────────────────────
 __pycache__/

@@ -13,7 +13,7 @@ response: data/aia_temp_response_chiantifix.npz
 wavelength: 171            # 335 matches the PSI reference frames; 171 also fine
 vlim_log: [0.5, 4.0]                  # top level, for a single-channel config
 scale: log                 # log | linear  intensity scale
-image: {Npix: 300, Rmax: 1.5}
+image: {Npix: 256, Rmax: 1.5}
 views:
   # MAS cubes are Carrington-framed: obs_time -> sub-Earth L0/B0 via sunpy.
   - {label: earth,     obs_time: '2024-03-31T05:14:20'}
