@@ -1,5 +1,5 @@
 # All AIA channels in ONE figure — ARMS wedge mhd_data_0220.h5.
-#   rrt-euv examples/configs/arms_wedge_euv_channels.yaml
+#   rrt-euv examples/configs/case2_euv_channels.yaml
 #
 # The only difference from a normal EUV config is the plural key:
 #   wavelength:  171                       -> one map per view (single PNG)
@@ -32,4 +32,4 @@ panel:
 
 views:
    - {label: earth,     obs_time: '2024-03-31T05:14:20'}
-output_dir: out/arms_wedge_euv_channels
+output_dir: out/case2_euv_channels

@@ -1,7 +1,7 @@
 # Test case 2 — ARMS wedge: mhd_data_0220.h5 (density only -> isothermal).
 # 90-deg wedge in phi, theta 11-169 deg; fmt/nghost/units are auto-detected.
-#   rrt-euv examples/configs/arms_wedge_euv.yaml
-#   rrt-los examples/configs/arms_wedge_euv.yaml    (uses the los: block below)
+#   rrt-euv examples/configs/case2_euv.yaml
+#   rrt-los examples/configs/case2_euv.yaml    (uses the los: block below)
 data:
   density: data/mhd_data_0220.h5
   input_case: auto           # no temperature in the file -> density_only
@@ -18,4 +18,4 @@ views:
   - {label: Face-on view, phi_obs_deg: 20, B0_deg: 20}
 # probes must lie where the wedge actually is:
 los: {probes: [[1.2, 0.0], [1.5, 0.0], [0.99, 0.22]]}
-output_dir: out/arms_wedge_euv
+output_dir: out/case2_euv

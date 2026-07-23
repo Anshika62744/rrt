@@ -1,6 +1,6 @@
 # Test case 3 — white-light polarised brightness (pB) for the MAS/PSI shell
 # rhoC_02.h5. Density only — no temperature, no response.
-#   rrt-wl examples/configs/rhoC_02_wl.yaml
+#   rrt-wl examples/configs/case3_wl.yaml
 data:
   density: data/rhoC_02.h5
   fmt: mas
@@ -11,4 +11,4 @@ image: {Npix: 256, Rmax: 6.0}
 views:
   - {label: earth, obs_time: '2024-05-08T14:09:00'}
 white_light: {Rocc: 1.0, U_LIMB: 0.63, SIGMA_T: 7.95e-26, nrgf: true}
-output_dir: out/rhoC_02_wl
+output_dir: out/case3_wl

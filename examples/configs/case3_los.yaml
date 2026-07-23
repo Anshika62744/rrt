@@ -1,6 +1,6 @@
 # Test case 3 — single line-of-sight diagnostics for the MAS/PSI shell
 # rhoC_02.h5 + t02.h5.
-#   rrt-los examples/configs/rhoC_02_los.yaml
+#   rrt-los examples/configs/case3_los.yaml
 data:
   density: data/rhoC_02.h5
   temperature: data/t02.h5
@@ -18,4 +18,4 @@ views:
 # On-disk probes (|(X,Y)| < 1) are clipped at the photosphere, off-limb ones
 # see the full chord.
 los: {probes: [[1.5, 0.3], [0.5, 0.0], [2.5, 0.0]]}
-output_dir: out/rhoC_02_los
+output_dir: out/case3_los

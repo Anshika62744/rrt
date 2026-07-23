@@ -1,7 +1,7 @@
 # Test case 1 — MAS/PSI full shell:  rho_bin.h5 (density) + t_bin.h5 (temperature).
 # Synthetic AIA at the sub-Earth viewpoint for 2024-03-31 05:14 UTC.
-#   rrt-euv examples/configs/rho_bin_euv.yaml
-#   rrt-los examples/configs/rho_bin_euv.yaml     (uses the los: block below)
+#   rrt-euv examples/configs/case1_euv.yaml
+#   rrt-los examples/configs/case1_euv.yaml     (uses the los: block below)
 data:
   density: data/rho_bin.h5
   temperature: data/t_bin.h5
@@ -20,4 +20,4 @@ views:
   - {label: pole,  obs_time: '2024-03-31T05:14:20', pole: north}
   - {label: face_on, phi_obs_deg: 214, B0_deg: -10} # adjust phi_obs_deg and B0_deg to match the MAS cube orientation
 los: {probes: [[1.5, 0.3], [0.5, 0.0], [2.5, 0.0]]}
-output_dir: out/rho_bin_euv
+output_dir: out/case1_euv

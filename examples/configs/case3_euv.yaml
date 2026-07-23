@@ -1,7 +1,7 @@
 # Test case 3 — MAS/PSI full shell: rhoC_02.h5 (density) + t02.h5 (temperature).
 # Same layout and normalisation as test case 1, different snapshot.
-#   rrt-euv examples/configs/rhoC_02_euv.yaml
-#   rrt-los examples/configs/rhoC_02_euv.yaml     (uses the los: block below)
+#   rrt-euv examples/configs/case3_euv.yaml
+#   rrt-los examples/configs/case3_euv.yaml     (uses the los: block below)
 data:
   density: data/rhoC_02.h5
   temperature: data/t02.h5
@@ -18,5 +18,5 @@ views:
   - {label: earth,     obs_time: '2024-05-08T14:09:00'}
   - {label: earth_top, obs_time: '2024-05-08T14:09:00', pole: north}
 los: {probes: [[1.5, 0.3], [0.5, 0.0], [2.5, 0.0]]}
-output_dir: out/rhoC_02_euv
+output_dir: out/case3_euv
 
