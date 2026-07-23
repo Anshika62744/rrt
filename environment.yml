@@ -1,8 +1,7 @@
 # Conda environment for the rrt package.
 #   conda env create -f environment.yml
 #   conda activate rrt
-# Tested on Python 3.11. Version floors match pyproject.toml; exact pins are
-# intentionally omitted pending maintainer approval.
+# Tested on Python 3.11. Version floors match pyproject.toml;
 name: rrt
 channels:
   - conda-forge

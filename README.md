@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Turn a 3-D MHD cube of the solar corona into **synthetic images an instrument
-would see**. Given electron density (and optionally temperature) on a spherical
+would see**. Given electron density and temperature on a spherical
 `(r, θ, φ)` grid, `rrt` integrates along every image-plane pixel's line of sight
 (the analytic **Siddon** ray–cell method) to produce:
 
@@ -202,9 +202,17 @@ data:
   angle_units: auto        # auto | rad | deg
 response: data/aia_temp_response_chiantifix.npz   # AIA table (EUV & LOS only)
 wavelength: 171            # 94, 131, 171, 193, 211, 304, 335
+wavelengths: [171, 193]    # optional; a LIST renders every channel into ONE
+                           #   grid figure per view (instead of one PNG each)
 image:
   Npix: 400                # pixels per side (higher = slower, sharper)
   Rmax: 1.5                # field-of-view half-width [R_sun] (≈1.5 disk, ≈5 coronagraph)
+vlim: [1.0e-1, 1.0e+4]     # optional colorbar limits [DN/s, or cm^-1 for pB];
+                           #   omit for the 1–99 percentile of each image
+panel: {ncols: 3, dynamic_range: 1.0e+8, mask_disk: false, vlim: null}
+                           # multi-channel grid only: layout, decades below each
+                           #   panel's peak, and an optional [lo, hi] or
+                           #   {wavelength: [lo, hi]} colorbar override
 views:                     # one image per entry
   - {label: Side, phi_obs_deg: -70, B0_deg: 0}     # explicit angles, OR…
   - {label: sub-Earth, obs_time: '2024-03-30T20:49:00'}   # sub-Earth L0/B0 (MAS)
