@@ -40,11 +40,14 @@ class Config:
     data: dict = field(default_factory=dict)
     response: str | None = None
     wavelength: int = 171
+    wavelengths: list = field(default_factory=list)
     Npix: int = 256
     Rmax: float = 1.5
     views: list = field(default_factory=lambda: [
         {"label": "Side view", "phi_obs_deg": -70.0, "B0_deg": 0.0}])
     output_dir: str = "out"
+    vlim: list | None = None          # [lo, hi] colorbar limits; None → percentiles
+    scale: str = "log"                # "log" | "linear" intensity scale
     white_light: dict = field(default_factory=dict)
     los: dict = field(default_factory=dict)
     raw: dict = field(default_factory=dict)
@@ -90,18 +93,30 @@ def load_config(path: str) -> Config:
     if "data" not in d or "density" not in d.get("data", {}):
         raise ValueError(f"{path}: config must define data.density")
     image = d.get("image", {}) or {}
+    # "wavelengths: [94, 131, ...]" renders every channel into one grid figure;
+    # "wavelength: 171" (singular) stays a one-channel run.
+    wls = d.get("wavelengths")
+    wls = [int(w) for w in wls] if wls else [int(d.get("wavelength", 171))]
     cfg = Config(
         data=d["data"],
         response=d.get("response"),
-        wavelength=int(d.get("wavelength", 171)),
+        wavelength=int(d.get("wavelength", wls[0])),
+        wavelengths=wls,
         Npix=int(image.get("Npix", 256)),
         Rmax=float(image.get("Rmax", 1.5)),
         views=d.get("views") or [{"label": "Side view", "phi_obs_deg": -70.0, "B0_deg": 0.0}],
         output_dir=d.get("output_dir", "out"),
+        vlim=([float(x) for x in d["vlim"]] if d.get("vlim") else None),
+        scale=str(d.get("scale", "log")).lower(),
         white_light=d.get("white_light", {}) or {},
         los=d.get("los", {}) or {},
         raw=d,
     )
+    # "vlim_log: [lo, hi]" is the same limits written as log10 exponents
+    if cfg.vlim is None and d.get("vlim_log"):
+        cfg.vlim = [10.0 ** float(x) for x in d["vlim_log"]]
+    if cfg.scale not in ("log", "linear"):
+        raise ValueError(f"{path}: scale must be 'log' or 'linear', got {cfg.scale!r}")
     return cfg
 
 

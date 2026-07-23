@@ -7,9 +7,7 @@ brightness (pB) via Thomson scattering (van de Hulst / Billings coefficients).
 pB(pixel) = ∫ n_e(r) · K(r) · dℓ,  with  K(r) = σ_e · [(1-u)·A(r) + u·B(r)].
 
 The boundary-intersection geometry, ``make_edges`` and ``prepare_domain`` are
-imported from :mod:`rrt.geometry` — the single shared core. The integrator kernel
-below is byte-for-byte the validated original; only the source of the geometry
-helpers changed (import instead of an in-file copy).
+imported from :mod:`rrt.geometry` — the single shared core. 
 
 Domain-agnostic: works for a wedge, a polar cap, a full shell or a full disk.
 
@@ -29,14 +27,14 @@ import time
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm  # noqa: F401  (kept for API parity)
+from matplotlib.colors import LogNorm  
 from numba import njit, prange
 
 from rrt.geometry import (
     _radial_intersections,
     _theta_intersections,
     _phi_intersections,
-    make_edges,        # noqa: F401  (re-exported for backward compatibility)
+    make_edges,        
     prepare_domain,
 )
 
@@ -76,12 +74,7 @@ def _pB_kernel(r, U_LIMB, SIGMA_T):
     Polarised brightness kernel K(r):
         K(r) = SIGMA_T * [ (1 - u)*A(r) + u*B(r) ]
     Units: cm²  (scattering constant times dimensionless geometry)
-
-    SIGMA_T here is the coronal Thomson-scattering constant that multiplies the
-    van de Hulst / Billings geometric factors A, B — the standard value is the
-    classical electron radius squared r_e² ≈ 7.95e-26 cm². (The A, B factors
-    already carry the angular dependence, so the total cross-section
-    σ_T = (8π/3) r_e² = 6.65e-25 would double-count the 8π/3 integration.)
+   
     """
     A, B = _billings_ABCD(r)
     return SIGMA_T * ((1.0 - U_LIMB)*A + U_LIMB*B)
@@ -113,8 +106,9 @@ def siddon_integrate_pB(
     Integrand:  pB(pixel) = ∫ ne(r) · K(r) · ds
     where K(r) = SIGMA_T * [(1-u)*A(r) + u*B(r)]  [cm²]
 
-    Units: [cm⁻³] × [cm²] × [cm] = [cm⁻¹]
-    (multiply by (Rsun_cm / 1AU_cm)² outside to get MSB if needed)
+    Units: [cm⁻³] × [cm²] × [cm] = dimensionless — pB comes out as a brightness
+    ratio (relative to the mean solar disk brightness for the standard van de
+    Hulst / Billings normalisation), not as a per-length quantity.
     """
     Npix2  = X_flat.shape[0]
     result = np.zeros(Npix2, dtype=np.float64)
@@ -277,7 +271,7 @@ def run_siddon_pB(
 
     Returns
     -------
-    pB_image : 2D array (Npix, Npix)  [cm⁻¹]
+    pB_image : 2D array (Npix, Npix)  [dimensionless brightness ratio]
     """
 
     # ── Build cell edges and detect the domain extent ─────────────────────────
@@ -322,7 +316,7 @@ def run_siddon_pB(
               f'domain overlaps the field of view')
     else:
         print(f'Done in {dt:.1f} s  |  '
-              f'pB_min={nonzero.min():.2e}  pB_max={pB_image.max():.2e} cm⁻¹')
+              f'pB_min={nonzero.min():.2e}  pB_max={pB_image.max():.2e} (dimensionless)')
 
     # ── Plot ──────────────────────────────────────────────────────────────────
     if plot:
@@ -363,7 +357,7 @@ def run_siddon_pB(
                             lw=0.8, zorder=6))
 
         fig.colorbar(im, ax=ax, pad=0.02,
-                     label=r'$\log_{10}$ pB  [cm$^{-1}$]')
+                     label=r'$\log_{10}$ pB')
         #ax.set_xlabel(r'Solar West  [$R_\odot$]')
         #ax.set_ylabel(r'Solar North [$R_\odot$]')
         #ax.set_title(f'Synthetic White Light pB — Siddon  ({OBS_TIME})')

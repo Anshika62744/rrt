@@ -1,9 +1,7 @@
 """
 rrt.geometry
 ────────────
-The shared geometry core for every rrt integrator. Previously this code was
-duplicated verbatim in the EUV and white-light modules and re-implemented a
-third time inside the LOS diagnostics; it now lives here **once** and is imported
+The shared geometry core for every rrt integrator. It is imported
 by ``rrt.euv``, ``rrt.wl`` and ``rrt.los``.
 
 Contents
@@ -15,11 +13,8 @@ Contents
 
 The three ``_*_intersections`` helpers are ``@njit`` so they can be called both
 from the parallel Numba kernels (``rrt.euv``/``rrt.wl``) and from the pure-Python
-LOS walker (``rrt.los``) — a single implementation with no drift.
+LOS walker (``rrt.los``).
 
-Cell assignment convention (used by every consumer): digitise into EDGES with
-``searchsorted(edges, x, side='right') - 1``. The LOS diagnostics and the
-integrators MUST agree on this, so it is defined and exercised here.
 """
 
 import numpy as np
@@ -76,6 +71,83 @@ def _theta_intersections(rx, ry, rz, ex, ey, ez, theta_bounds):
         out.append((-b + sq)/(2.0*a))
     return out
 
+''' @njit
+def _theta_intersections(
+    rx, ry, rz,
+    ex, ey, ez,
+    theta_bounds,
+    angle_tol=1e-10
+):
+    """
+    Return LOS parameters s where the ray crosses each single-nappe
+    constant-theta surface.
+    """
+    rdote = rx*ex + ry*ey + rz*ez
+    r2 = rx*rx + ry*ry + rz*rz
+
+    out = []
+
+    for th in theta_bounds:
+        cos_th = np.cos(th)
+        cos2 = cos_th*cos_th
+
+        a = ez*ez - cos2
+        b = 2.0*(rz*ez - cos2*rdote)
+        c = rz*rz - cos2*r2
+
+        # Nearly linear equation
+        if abs(a) < 1e-14:
+            if abs(b) > 1e-14:
+                s = -c / b
+
+                x = rx + s*ex
+                y = ry + s*ey
+                z = rz + s*ez
+                r = np.sqrt(x*x + y*y + z*z)
+
+                if r > 0.0:
+                    # Check the unsquared condition z/r = cos(theta)
+                    if abs(z/r - cos_th) <= angle_tol:
+                        out.append(s)
+            continue
+
+        disc = b*b - 4.0*a*c
+
+        # Allow tiny negative values caused by roundoff
+        if disc < -1e-14:
+            continue
+
+        if disc < 0.0:
+            disc = 0.0
+
+        sq = np.sqrt(disc)
+
+        s1 = (-b - sq) / (2.0*a)
+        s2 = (-b + sq) / (2.0*a)
+
+        # Validate first root
+        x1 = rx + s1*ex
+        y1 = ry + s1*ey
+        z1 = rz + s1*ez
+        r1 = np.sqrt(x1*x1 + y1*y1 + z1*z1)
+
+        if r1 > 0.0:
+            if abs(z1/r1 - cos_th) <= angle_tol:
+                out.append(s1)
+
+        # Do not add the same root twice for a tangent intersection
+        if abs(s2 - s1) > 1e-12:
+            x2 = rx + s2*ex
+            y2 = ry + s2*ey
+            z2 = rz + s2*ez
+            r2_candidate = np.sqrt(x2*x2 + y2*y2 + z2*z2)
+
+            if r2_candidate > 0.0:
+                if abs(z2/r2_candidate - cos_th) <= angle_tol:
+                    out.append(s2)
+
+    return out'''
+
 
 @njit
 def _phi_intersections(rx, ry, rz, ex, ey, ez, phi_bounds):
@@ -110,10 +182,7 @@ def prepare_domain(r_ori, theta_ori, phi_ori, tol=1e-6):
     """
     Build cell edges and detect the angular extent of the domain.
 
-    Works for any spherical sub-domain: a narrow wedge, a polar cap, a full
-    2pi shell, or a complete disk. The returned flags let the integrator skip
-    the wedge-rejection tests (and drop the degenerate cone / duplicate
-    half-plane boundaries) whenever a coordinate is complete or periodic.
+    Works for any spherical sub-domain (wedge, cap, shell, disk) and any radial extent.
 
     Returns a dict with
         r_edges, theta_edges, phi_edges : cell boundaries
@@ -123,7 +192,7 @@ def prepare_domain(r_ori, theta_ori, phi_ori, tol=1e-6):
         r_min, r_max                    : radial extent of the domain
     """
     r_edges = make_edges(np.asarray(r_ori, dtype=np.float64))
-    r_edges[0] = max(r_edges[0], 0.0)
+    r_edges[0] = max(r_edges[0], 0.0)  # Clipping to non-negative radius.
 
     theta_edges = np.clip(make_edges(np.asarray(theta_ori, dtype=np.float64)),
                           0.0, np.pi)

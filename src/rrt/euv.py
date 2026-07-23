@@ -9,9 +9,7 @@ temperature field. Any SDO/AIA channel is supported via the response table
 
 The boundary-intersection geometry, ``make_edges`` and ``prepare_domain`` are
 imported from :mod:`rrt.geometry` — the single shared core used by the EUV,
-white-light and LOS-diagnostic paths alike. The integrator kernel below is
-byte-for-byte the validated original; only the source of the geometry helpers
-changed (import instead of an in-file copy).
+white-light and LOS-diagnostic paths alike. 
 
 Domain-agnostic: works for a wedge, a polar cap, a full shell or a full disk.
 
@@ -24,7 +22,7 @@ Example
         ne_grid, T_grid,
         T_resp, R_resp,
         Npix=516, Rmax=1.5, WAVELENGTH=171,  # 94, 211, 304, 131, 335
-        OBS_TIME='2024-05-07T14:09:00',
+        OBS_TIME='2024-05-08T14:09:00',
     )
 """
 

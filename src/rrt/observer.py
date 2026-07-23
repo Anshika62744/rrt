@@ -2,8 +2,7 @@
 rrt.observer
 ────────────
 Observer geometry: the image-plane basis and line-of-sight vector for a
-viewpoint, and the sky-plane pixel grid. Harvested from the (identical) copies
-that were duplicated across the driver notebooks.
+viewpoint, and the sky-plane pixel grid. 
 
 A viewpoint may be given as explicit ``(phi_obs_deg, B0_deg)`` or, for
 Carrington-framed data (e.g. MAS/PSI), derived from an observation time via
@@ -23,9 +22,8 @@ def make_observer(phi_obs_deg: float, B0_deg: float):
     phi_obs_deg : observer longitude in the simulation frame [deg] (0=+x, 90=+y).
     B0_deg      : observer heliographic latitude [deg] (0=equator, 90=north pole).
 
-    ``n_obs`` points from Sun to observer; ``e_los = -n_obs`` is the look
-    direction. The image basis uses a pole-safe up-vector so a top-down view does
-    not degenerate.
+    ``n_obs`` points from Sun to observer; ``e_los = -n_obs`` is the LOS
+    direction. 
     """
     phi = np.deg2rad(phi_obs_deg)
     B0 = np.deg2rad(B0_deg)
@@ -72,6 +70,87 @@ def make_observer_from_time(obs_time, phi_offset_deg=0.0):
     L0, B0 = sub_earth_angles(obs_time)
     return make_observer(L0 + phi_offset_deg, B0)
 
+def make_pole_observer(up_lon_deg, pole="north"):
+    """Observer straight above a pole, rolled so a chosen longitude is +y_img.
+
+    Unlike ``make_observer(phi, ±90)`` — where the longitude argument has no
+    effect and the image roll is pinned to Carrington 0° — this sets the roll
+    explicitly: the equatorial direction at ``up_lon_deg`` points up in the
+    image. Pass the sub-Earth L0 to keep a pole view aligned with the matching
+    Earth view, or a feature's longitude to put that feature at the top.
+    """
+    phi = np.deg2rad(float(up_lon_deg))
+
+    if str(pole).lower() == "north":
+        n_obs = np.array([0.0, 0.0, 1.0])
+    elif str(pole).lower() == "south":
+        n_obs = np.array([0.0, 0.0, -1.0])
+    else:
+        raise ValueError("pole must be 'north' or 'south'")
+
+    e_los = -n_obs
+
+    # Equatorial direction of the requested longitude → +y_img
+    y_img = np.array([np.cos(phi), np.sin(phi), 0.0])
+    x_img = np.cross(y_img, n_obs)
+
+    x_img /= np.linalg.norm(x_img)
+    y_img /= np.linalg.norm(y_img)
+
+    return n_obs, e_los, x_img, y_img
+
+
+def observer_from_view(view):
+    """``(n_obs, e_los, x_img, y_img)`` for one config ``views:`` entry.
+
+    Recognises ``pole: north|south`` — a true top-down view whose image roll is
+    set by ``up_lon_deg`` (default: the sub-Earth L0 of ``obs_time``, so it lines
+    up with the matching Earth view). Everything else resolves through
+    :func:`view_angles` exactly as before.
+    """
+    pole = view.get("pole")
+    if not pole:
+        return make_observer(*view_angles(view))
+    lon = view.get("up_lon_deg")
+    if lon is None:
+        lon = sub_earth_angles(view["obs_time"])[0] if view.get("obs_time") else 0.0
+    return make_pole_observer(float(lon), pole=pole)
+
+
+def make_earth_top_observer(obs_time, pole="north"):
+    """
+    Observer above the solar north or south pole.
+
+    The image is rotated so that the direction toward Earth's
+    Carrington longitude appears along +y_img.
+    """
+    L0_deg, _ = sub_earth_angles(obs_time)
+    phi = np.deg2rad(L0_deg)
+
+    if pole.lower() == "north":
+        n_obs = np.array([0.0, 0.0, 1.0])
+    elif pole.lower() == "south":
+        n_obs = np.array([0.0, 0.0, -1.0])
+    else:
+        raise ValueError("pole must be 'north' or 'south'")
+
+    e_los = -n_obs
+
+    # Equatorial direction corresponding to Earth's Carrington longitude
+    earth_direction = np.array([
+        np.cos(phi),
+        np.sin(phi),
+        0.0,
+    ])
+
+    # Choose basis so +y_img points toward Earth's longitude
+    y_img = earth_direction
+    x_img = np.cross(y_img, n_obs)
+
+    x_img /= np.linalg.norm(x_img)
+    y_img /= np.linalg.norm(y_img)
+
+    return n_obs, e_los, x_img, y_img
 
 def view_angles(view):
     """Resolve a config ``view`` dict to ``(phi_obs_deg, B0_deg)``.

@@ -3,8 +3,7 @@ rrt.viz
 ───────
 Reusable plotting helpers shared by the drivers and example notebooks: the AIA
 colormap lookup, the limb wireframe overlay, the NRGF radial filter, a single-map
-plotter, and the 4-tier movie encoder (previously copy-pasted into both
-time-evolution notebooks).
+plotter, and the 4-tier movie encoder.
 """
 
 from __future__ import annotations
@@ -79,6 +78,19 @@ def nrgf(img, Xg, Yg, r_inner=1.0, r_outer=None, n_radial_bins=120, min_pixels_p
     return out
 
 
+def radial_flatten(img, Xg, Yg, power=3.0, r_ref=1.0):
+    """Multiply by ``(ρ/r_ref)**power`` to cancel the steep radial falloff.
+
+    ``ρ = hypot(Xg, Yg)`` is the plane-of-sky impact parameter [R_sun]. White
+    light drops roughly as ρ⁻³…ρ⁻⁵, so ``power≈3`` compresses several decades of
+    dynamic range into one image and lets streamers stay visible far out —
+    unlike :func:`nrgf`, it preserves the sign and the relative brightness
+    *within* an annulus, it only rescales between annuli.
+    """
+    rho = np.maximum(np.hypot(np.asarray(Xg), np.asarray(Yg)), 1e-6)
+    return np.asarray(img, dtype=float) * (rho / float(r_ref)) ** float(power)
+
+
 def plot_map(img, rmax, *, cmap="viridis", log=True, mask_disk=False,
              occulter=None, cbar_label="", title="", vlim=None, wireframe=None,
              ax=None):
@@ -89,7 +101,11 @@ def plot_map(img, rmax, *, cmap="viridis", log=True, mask_disk=False,
     """
     img = np.asarray(img, dtype=float).copy()
     disp = img.copy()
-    disp[disp <= 0] = np.nan
+    # Only a log scale needs non-positive pixels removed. A linear map may be a
+    # signed quantity (e.g. an NRGF σ-map, where ~half the pixels are ≤ 0 by
+    # construction); blanking those would delete half the image.
+    if log:
+        disp[disp <= 0] = np.nan
     Rperp = None
     if mask_disk or occulter is not None:
         xs = np.linspace(-rmax, rmax, img.shape[1])
@@ -128,6 +144,105 @@ def plot_map(img, rmax, *, cmap="viridis", log=True, mask_disk=False,
     if title:
         ax.set_title(title)
     return fig, ax, im
+
+
+def channel_grid(images, rmax, *, ncols=3, dynamic_range=1e8, vlim=None, log=True,
+                 cbar="log10", cbar_ticks=6, occulter=None, mask_disk=False,
+                 suptitle="", panel_size=(4.8, 4.0), facecolor="black"):
+    """One panel per AIA channel in a single dark figure. Returns ``(fig, axes)``.
+
+    ``images`` maps wavelength → 2-D map (DN/s/pixel). By default each panel gets
+    its own log colorbar spanning ``dynamic_range`` below that channel's peak,
+    since the channels differ by orders of magnitude. Pass ``vlim=(lo, hi)`` for
+    one fixed scale on every panel, or a ``{wavelength: (lo, hi)}`` dict for
+    per-channel limits (channels left out fall back to ``dynamic_range``).
+
+    ``cbar`` picks the tick style of a log scale: ``"log10"`` (default) plots
+    log₁₀ values with evenly spaced numeric ticks, like a PSI/Predictive-Science
+    frame; ``"decades"`` keeps a matplotlib LogNorm with 10ⁿ ticks. ``vlim`` is
+    given in linear units either way.
+    """
+    ws = list(images)
+    ncols = max(1, min(ncols, len(ws)))
+    nrows = int(np.ceil(len(ws) / ncols))
+    # text/ticks flip to black on a light page, white on a dark one
+    from matplotlib.colors import to_rgb
+    r_, g_, b_ = to_rgb(facecolor)
+    fg = "black" if (0.299 * r_ + 0.587 * g_ + 0.114 * b_) > 0.5 else "white"
+
+    fig, axes = plt.subplots(nrows, ncols, squeeze=False,
+                             figsize=(panel_size[0] * ncols, panel_size[1] * nrows))
+    fig.patch.set_facecolor(facecolor)
+
+    Rperp = None
+    if mask_disk or occulter is not None:
+        xs = np.linspace(-rmax, rmax, np.asarray(images[ws[0]]).shape[1])
+        Xg, Yg = np.meshgrid(xs, xs, indexing="xy")
+        Rperp = np.hypot(Xg, Yg)
+
+    for k, w in enumerate(ws):
+        ax = axes[k // ncols][k % ncols]
+        disp = np.asarray(images[w], dtype=float).copy()
+        disp[disp <= 0] = np.nan
+        if mask_disk and Rperp is not None:
+            disp[Rperp < 1.0] = np.nan
+        if occulter is not None and Rperp is not None:
+            disp[Rperp < occulter] = np.nan
+
+        dmax = np.nanmax(disp) if np.any(np.isfinite(disp)) else 1.0
+        lim = vlim.get(w) if isinstance(vlim, dict) else vlim
+        if lim is not None:
+            vmin, vmax = float(lim[0]), float(lim[1])
+        elif log:
+            vmax, vmin = dmax, max(dmax / dynamic_range, 1e-30)
+        else:
+            vmax, vmin = dmax, 0.0
+        cm = aia_cmap(w); cm.set_bad("black")
+
+        # log10 display: plot the logged data on a linear norm, so the colorbar
+        # reads -1.00 … 3.50 (PSI style) instead of 10^-1 … 10^3.5
+        log10_mode = log and cbar == "log10"
+        if log10_mode:
+            data = np.log10(disp)
+            lo, hi = np.log10(max(vmin, 1e-30)), np.log10(max(vmax, 1e-30))
+            norm = Normalize(vmin=lo, vmax=hi)
+        else:
+            data = disp
+            norm = (LogNorm(vmin=max(vmin, 1e-30), vmax=vmax) if log
+                    else Normalize(vmin=vmin, vmax=vmax))
+        im = ax.imshow(data, origin="lower", extent=[-rmax, rmax, -rmax, rmax],
+                       cmap=cm, norm=norm, interpolation="bilinear")
+        cb = fig.colorbar(im, ax=ax, pad=0.02, fraction=0.046,
+                          ticks=(np.linspace(lo, hi, int(cbar_ticks)) if log10_mode else None))
+        if log10_mode:
+            cb.ax.set_yticklabels([f"{v:.2f}" for v in np.linspace(lo, hi, int(cbar_ticks))])
+        cb.set_label((r"Log$_{10}$ DN s$^{-1}$ pix$^{-1}$" if log10_mode
+                      else r"DN s$^{-1}$ pix$^{-1}$"), color=fg, fontsize=8)
+        cb.ax.tick_params(colors=fg, labelsize=7)
+        cb.outline.set_edgecolor(fg)
+
+        ax.add_patch(Circle((0, 0), 1.0, fill=False, edgecolor="0.7", ls="--", lw=0.8))
+        if occulter is not None:
+            ax.add_patch(Circle((0, 0), occulter, facecolor="black", edgecolor="0.7",
+                                ls="--", lw=0.8, zorder=5))
+        # these sit on the black image area, so they stay white in both themes
+        ax.text(0.04, 0.94, f"AIA {w} Å", transform=ax.transAxes, color="white",
+                fontsize=12, fontweight="bold", va="top")
+        ax.text(0.97, 0.03, f"max = {dmax:.2e}", transform=ax.transAxes, color="white",
+                fontsize=8, ha="right", va="bottom")
+        ax.set_facecolor("black")          # empty sky stays black in both themes
+        ax.set_aspect("equal")
+        ax.tick_params(colors=fg, labelsize=8)
+        for sp in ax.spines.values():
+            sp.set_color(fg if fg == "black" else "black")
+
+    for k in range(len(ws), nrows * ncols):          # blank any unused cell
+        axes[k // ncols][k % ncols].axis("off")
+
+    if suptitle:
+        fig.suptitle(suptitle, color=fg, fontsize=14)
+    fig.tight_layout()
+    return fig, axes
 
 
 # ─────────────────────────────────────────────────────────────────────────────
