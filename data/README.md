@@ -21,11 +21,17 @@ update the `data:` block of the configs that use it.
 
 ## Download
 
-| Case | Files | Data | Link |
-|---|---|---|---|
-| **case 1** | `rho_bin.h5` + `t_bin.h5` | MAS/PSI full shell, density + temperature in code units | _(link to be added)_ |
-| **case 2** | `mhd_data_0220.h5` | ARMS 90° wedge, density only (→ isothermal) | _(link to be added)_ |
-| **case 3** | `rhoC_02.h5` + `t02.h5` | MAS/PSI full shell, second snapshot | <https://drive.google.com/drive/folders/1BFf-Grq2p3pRjBgORyAR9gTpcW-48ri4?usp=share_link> |
+All test data lives in one Google Drive folder:
+
+**<https://drive.google.com/drive/folders/1BFf-Grq2p3pRjBgORyAR9gTpcW-48ri4?usp=sharing>**
+
+| Case | Files to grab | Data |
+|---|---|---|
+| **case 1** | `rho_bin.h5` + `t_bin.h5` | MAS/PSI full shell, density + temperature in code units |
+| **case 2** | `mhd_data_0220.h5` | ARMS 90° wedge, density only (→ isothermal) |
+| **case 3** | `rhoC_02.h5` + `t02.h5` | MAS/PSI full shell, second snapshot |
+
+You only need the files for the case you want to run; each case is independent.
 
 Google Drive shows a virus-scan interstitial for files over ~100 MB, so a plain
 `curl`/`wget` on a share link returns an HTML page instead of the file. Either
