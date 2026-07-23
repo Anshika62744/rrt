@@ -96,6 +96,11 @@ If those images appear, your install is good.
 
 ## 3. Run on YOUR data
 
+> **Want the datasets these examples ship configs for?** The MHD cubes are too
+> large for git — download links, sizes and md5 checksums for all three test
+> cases are in [`data/README.md`](data/README.md). Drop the files in `data/` and
+> the `case1_*` / `case2_*` / `case3_*` configs run as-is.
+
 The **only** thing you change per dataset is a small **YAML config file**. Copy a
 template, edit the `data:` block, run one command. Below are the two common cases.
 
