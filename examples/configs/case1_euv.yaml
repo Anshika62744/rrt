@@ -17,7 +17,9 @@ image: {Npix: 300, Rmax: 1.5}
 views:
   # MAS cubes are Carrington-framed: obs_time -> sub-Earth L0/B0 via sunpy.
   - {label: earth,     obs_time: '2024-03-31T05:14:20'}
-  - {label: pole,  obs_time: '2024-03-31T05:14:20', pole: north}
+  # top-down view, rolled so the Earth direction is up (notebook 01 rebuilds this
+  # same view under the same label, so it stays one panel, not two)
+  - {label: earth_top, obs_time: '2024-03-31T05:14:20', pole: north}
   - {label: face_on, phi_obs_deg: 214, B0_deg: -10} # adjust phi_obs_deg and B0_deg to match the MAS cube orientation
 los: {probes: [[1.5, 0.3], [0.5, 0.0], [2.5, 0.0]]}
 output_dir: out/case1_euv
