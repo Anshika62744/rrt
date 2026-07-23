@@ -99,4 +99,8 @@ geometry and reports the residuals:
 
 Because the walker uses the same intersection helpers, edge rule and clip as the
 integrators, agreement of its per-segment `Σ I` with `run_siddon` for a pixel is a
-direct end-to-end check (asserted in the test suite to `rtol=1e-9`).
+direct end-to-end check. `examples/notebooks/03_los_diagnostics.ipynb` runs that
+comparison for every probe: off-limb rays agree to ~1e-16 (round-off), while an
+on-disk probe differs by ~1e-8 because the photospheric clip cuts one segment
+part-way — the walker sums whole segments, the kernel stops the chord exactly at
+`s = −√(1−b²)`.
