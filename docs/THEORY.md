@@ -81,8 +81,9 @@ pB = ∫ nₑ(s) · K(r(s)) · dℓ ,   K(r) = σ_e · [(1−u)·A(r) + u·B(r)]
   definitions omit that angular integration.
 - `u` — limb-darkening coefficient (default 0.63).
 
-Units: `[cm⁻³]·[cm²]·[cm] = [cm⁻¹]`; multiply by `(R_sun/1 AU)²` for mean solar
-brightness. The same opaque-body clip applies. An optional **NRGF** (Normalised
+Units: `[cm⁻³]·[cm²]·[cm]` cancels, so pB is **dimensionless** — a brightness
+ratio (relative to the mean solar disk brightness for this normalisation), not a
+per-length quantity. The same opaque-body clip applies. An optional **NRGF** (Normalised
 Radial Graded Filter) removes the steep radial falloff per annulus so streamers
 and CME structure stand out.
 

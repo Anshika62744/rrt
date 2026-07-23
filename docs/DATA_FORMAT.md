@@ -97,4 +97,4 @@ A NumPy `.npz` (canonical `aia_temp_response_chiantifix.npz`) with:
 | electron density | `nₑ` | cm⁻³ |
 | temperature | `T` | K |
 | EUV intensity | `I_λ` | DN s⁻¹ pixel⁻¹ |
-| white-light pB | `pB` | cm⁻¹ (with `σ_e = r_e² = 7.95e-26`; ×`(R_sun/1 AU)²` for MSB) |
+| white-light pB | `pB` | dimensionless brightness ratio — `[cm⁻³]·[cm²]·[cm]` cancels (with `σ_e = r_e² = 7.95e-26`) |

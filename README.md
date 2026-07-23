@@ -1,6 +1,5 @@
 # rrt — Rectilinear Ray Tracing of MHD cubes into synthetic observables
 
-[![CI](https://github.com/Anshika62744/rrt/actions/workflows/ci.yml/badge.svg)](https://github.com/Anshika62744/rrt/actions/workflows/ci.yml)
 [![Python 3.10–3.12](https://img.shields.io/badge/python-3.10%E2%80%933.12-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -15,10 +14,6 @@ would see**. Given electron density and temperature on a spherical
 
 Any domain (wedge, polar cap, full shell, full disk) and both file layouts
 (**ARMS** and **MAS/PSI**) are detected automatically.
-
-| EUV — three views | White light — pB + NRGF | LOS voxel proof |
-|:---:|:---:|:---:|
-| ![euv](docs/figures/gallery_euv.png) | ![wl](docs/figures/gallery_wl.png) | ![los](docs/figures/gallery_los.png) |
 
 ---
 
@@ -243,10 +238,6 @@ API & method: [`docs/API.md`](docs/API.md), [`docs/THEORY.md`](docs/THEORY.md).
 
 ---
 
-## Test & license
-
-```bash
-pytest        # 43 tests, all on generated synthetic data
-```
+## License
 
 [MIT](LICENSE) © Anshika Singh. If you use this, please cite it (`CITATION.cff`).

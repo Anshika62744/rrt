@@ -39,7 +39,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7.0"]
 notebook = ["jupyter", "ipykernel"]
 
 [project.scripts]
@@ -53,7 +52,3 @@ Repository = "https://github.com/Anshika62744/rrt"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"

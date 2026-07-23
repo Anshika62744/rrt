@@ -1,0 +1,21 @@
+# Test case 3 — single line-of-sight diagnostics for the MAS/PSI shell
+# rhoC_02.h5 + t02.h5.
+#   rrt-los examples/configs/rhoC_02_los.yaml
+data:
+  density: data/rhoC_02.h5
+  temperature: data/t02.h5
+  fmt: mas
+  ne_scale: 1.0e+8
+  t_scale: 2.807e+7
+  r_range: [1.03, 5.0]
+response: data/aia_temp_response_chiantifix.npz
+wavelength: 171
+scale: log                 # log | linear  intensity scale
+image: {Npix: 256, Rmax: 3.0}
+views:
+  - {label: earth, obs_time: '2024-03-30T20:49:00'}
+# X, Y are impact points on the sky [R_sun]; |(X,Y)| < the cube's outer radius.
+# On-disk probes (|(X,Y)| < 1) are clipped at the photosphere, off-limb ones
+# see the full chord.
+los: {probes: [[1.5, 0.3], [0.5, 0.0], [2.5, 0.0]]}
+output_dir: out/rhoC_02_los
