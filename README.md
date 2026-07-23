@@ -305,8 +305,6 @@ API & method: [`docs/API.md`](docs/API.md), [`docs/THEORY.md`](docs/THEORY.md).
 - **Raw white light looks like a featureless glow.** That's real: pB spans ~5
   decades over 1–6 R☉. Use `nrgf: true`, or `radial_power: 3` with `scale: linear`,
   to see streamers.
-- **zsh comments**: never paste a line containing `#` — run `setopt
-  interactive_comments` once if you want them, or just omit comments.
 - **First call is slow (~5–10 s)**: numba is JIT-compiling; later calls are fast.
 
 ---
