@@ -57,7 +57,7 @@ run_siddon_pB(Xg, Yg, x_img, y_img, e_los,
               Npix=256, Rmax=5.0, Rocc=1.0, OBS_TIME="",
               Rsun_cm=6.96e10, R_body=1.0, U_LIMB=0.63,
               SIGMA_T=7.95e-26, plot=True, save=True,   # r_e^2 (Billings/vdH)
-              log_limits=None) -> ndarray   # pB [cm^-1]
+              log_limits=None) -> ndarray   # pB, dimensionless
 siddon_integrate_pB(...)
 ```
 
