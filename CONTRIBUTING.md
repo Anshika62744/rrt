@@ -9,8 +9,8 @@ research package; the bar is *correctness first*, then clarity.
 git clone <your-fork-url> rrt && cd rrt
 conda env create -f environment.yml && conda activate rrt   # or a venv (see README)
 pip install -e .
-python examples/generate_synthetic_data.py                  # no proprietary files needed
-rrt-euv examples/configs/euv_fulldisk_synth.yaml            # smoke check
+rrt-euv --help                                              # console scripts installed?
+python -c "import rrt; print(rrt.__file__)"                 # must be this repo's src/rrt
 ```
 
 Tested on Python 3.11; supports 3.10–3.12.

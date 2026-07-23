@@ -63,10 +63,6 @@ rrt-euv examples/configs/case3_euv.yaml
 The notebooks in `examples/notebooks/` read the same configs — set
 `CASE = 'case1' | 'case2' | 'case3'` in the first code cell.
 
-No data at all? `python examples/generate_synthetic_data.py` writes small
-synthetic cubes into `examples/data/`, and the `*_synth.yaml` configs run the
-whole pipeline on those.
-
 ## Expected HDF5 layouts
 
 Both layouts are auto-detected by `rrt.io.load_mhd` (`fmt: auto`); the `fmt:` key
