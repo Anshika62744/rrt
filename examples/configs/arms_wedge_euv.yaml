@@ -1,0 +1,21 @@
+# Test case 2 — ARMS wedge: mhd_data_0220.h5 (density only -> isothermal).
+# 90-deg wedge in phi, theta 11-169 deg; fmt/nghost/units are auto-detected.
+#   rrt-euv examples/configs/arms_wedge_euv.yaml
+#   rrt-los examples/configs/arms_wedge_euv.yaml    (uses the los: block below)
+data:
+  density: data/mhd_data_0220.h5
+  input_case: auto           # no temperature in the file -> density_only
+  t_iso: 1.0e+6              # isothermal coronal temperature [K]
+  nghost: auto               # read from the file attrs (2 here)
+response: data/aia_temp_response_chiantifix.npz
+wavelength: 171
+scale: log                 # log | linear  intensity scale
+image: {Npix: 400, Rmax: 5.0}
+views:
+  # no observation time for this dataset -> explicit simulation-frame angles
+  - {label: Side view, phi_obs_deg: -70, B0_deg: 0}
+  - {label: Nose view, phi_obs_deg: -70, B0_deg: 89}
+  - {label: Face-on view, phi_obs_deg: 20, B0_deg: 20}
+# probes must lie where the wedge actually is:
+los: {probes: [[1.2, 0.0], [1.5, 0.0], [0.99, 0.22]]}
+output_dir: out/arms_wedge_euv

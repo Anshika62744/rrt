@@ -4,6 +4,7 @@
 data:
   density: examples/data/synth_fulldisk.h5
   input_case: auto
+scale: log                 # log | linear  intensity scale
 image:
   Npix: 256
   Rmax: 5.0

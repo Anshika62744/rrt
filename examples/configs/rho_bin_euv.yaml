@@ -1,16 +1,23 @@
-# EUV / AIA 171 for the MAS full-disk data (rho_bin.h5 + t_bin.h5).
-# Put both files in the data/ folder, then:  rrt-euv examples/configs/rho_bin_euv.yaml
+# Test case 1 — MAS/PSI full shell:  rho_bin.h5 (density) + t_bin.h5 (temperature).
+# Synthetic AIA at the sub-Earth viewpoint for 2024-03-31 05:14 UTC.
+#   rrt-euv examples/configs/rho_bin_euv.yaml
+#   rrt-los examples/configs/rho_bin_euv.yaml     (uses the los: block below)
 data:
   density: data/rho_bin.h5
   temperature: data/t_bin.h5
   fmt: mas
-  ne_scale: 1.0e+8            # MAS code-unit density -> cm^-3
+  ne_scale: 1.0e+8           # MAS code-unit density -> cm^-3
   t_scale: 2.807e+7          # MAS code-unit temperature -> K
-  r_range: [1.03, 5.0]
+  r_range: [1.03, 5.0]       # trim the dense base / limit integration depth
 response: data/aia_temp_response_chiantifix.npz
-wavelength: 171
-image: {Npix: 400, Rmax: 1.5}
+wavelength: 171            # 335 matches the PSI reference frames; 171 also fine
+vlim_log: [0.5, 4.0]                  # top level, for a single-channel config
+scale: log                 # log | linear  intensity scale
+image: {Npix: 300, Rmax: 1.5}
 views:
-  - {label: Equatorial, phi_obs_deg: -70, B0_deg: 0}
-  - {label: Pole,       phi_obs_deg: -70, B0_deg: 89}
+  # MAS cubes are Carrington-framed: obs_time -> sub-Earth L0/B0 via sunpy.
+  - {label: earth,     obs_time: '2024-03-31T05:14:20'}
+  - {label: pole,  obs_time: '2024-03-31T05:14:20', pole: north}
+  - {label: face_on, phi_obs_deg: 214, B0_deg: -10} # adjust phi_obs_deg and B0_deg to match the MAS cube orientation
+los: {probes: [[1.5, 0.3], [0.5, 0.0], [2.5, 0.0]]}
 output_dir: out/rho_bin_euv

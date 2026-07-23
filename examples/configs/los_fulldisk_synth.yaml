@@ -6,6 +6,7 @@ data:
   input_case: auto
 response: examples/data/synth_response.npz
 wavelength: 171
+scale: log                 # log | linear  intensity scale
 image:
   Npix: 256
   Rmax: 5.0

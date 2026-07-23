@@ -6,6 +6,7 @@ data:
   t_iso: 1.0e+6
 response: examples/data/synth_response.npz
 wavelength: 171
+scale: log                 # log | linear  intensity scale
 image:
   Npix: 256
   Rmax: 1.5

@@ -7,6 +7,7 @@ data:
   nghost: auto
 response: data/aia_temp_response_chiantifix.npz
 wavelength: 171
+scale: log                 # log | linear  intensity scale
 image:
   Npix: 512
   Rmax: 1.5

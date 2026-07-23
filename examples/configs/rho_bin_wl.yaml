@@ -1,12 +1,17 @@
-# White-light polarised brightness (pB) for rho_bin.h5.
-# Put the file in data/, then:  rrt-wl examples/configs/rho_bin_wl.yaml
+# Test case 1 — white-light polarised brightness (pB) for the MAS/PSI shell
+# rho_bin.h5. White light needs density only — no temperature, no response.
+#   rrt-wl examples/configs/rho_bin_wl.yaml
 data:
   density: data/rho_bin.h5
   fmt: mas
   ne_scale: 1.0e+8
-  r_range: [1.0, 15.0]
-image: {Npix: 400, Rmax: 6.0}
+  r_range: [1.0, 15.0]       # keep the outer corona: pB is a coronagraph product
+scale: log
+#scale: linear
+vlim_log: [-11.0, -6.0]        # log | linear  intensity scale
+#vlim: [-2.0, 3.0]        # log | linear  intensity scale
+image: {Npix: 256, Rmax: 3.0}
 views:
-  - {label: Side view, phi_obs_deg: -70, B0_deg: 0}
+  - {label: Earth, obs_time: '2024-03-31T05:14:20'}
 white_light: {Rocc: 1.0, U_LIMB: 0.63, SIGMA_T: 7.95e-26, nrgf: false}
 output_dir: out/rho_bin_wl

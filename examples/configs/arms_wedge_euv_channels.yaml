@@ -1,0 +1,35 @@
+# All AIA channels in ONE figure — ARMS wedge mhd_data_0220.h5.
+#   rrt-euv examples/configs/arms_wedge_euv_channels.yaml
+#
+# The only difference from a normal EUV config is the plural key:
+#   wavelength:  171                       -> one map per view (single PNG)
+#   wavelengths: [94, 131, 171, ...]       -> one grid figure per view
+# Any EUV config can be switched this way; the channels must exist in the
+# response file (94, 131, 171, 193, 211, 304, 335).
+data:
+  density: data/rho_bin.h5
+  temperature: data/t_bin.h5
+  ne_scale: 1.0e+8           # MAS code-unit density -> cm^-3
+  t_scale: 2.807e+7          # MAS code-unit temperature -> K
+  r_range: [1.03, 5.0]       # trim the dense base / limit integration depth
+response: data/aia_temp_response_chiantifix.npz
+wavelengths: [94, 131, 171, 193, 211, 335]
+scale: log                 # log | linear  intensity scale
+image: {Npix: 256, Rmax: 1.5}
+# grid layout: columns, decades below each panel's peak, on-disk masking
+panel:
+  ncols: 3
+  facecolor: white
+  cbar: log10
+  vlim_log:            # log10 DN/s, exactly like your AIA_LIMITS
+    94:  [-1.00, 2.50]
+    131: [-0.50, 3.00]
+    171: [ 0.50, 4.00]
+    193: [ 1.00, 4.50]
+    211: [ 0.50, 4.00]
+    335: [-0.50, 3.00]
+
+
+views:
+   - {label: earth,     obs_time: '2024-03-31T05:14:20'}
+output_dir: out/arms_wedge_euv_channels

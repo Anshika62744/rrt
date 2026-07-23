@@ -6,6 +6,7 @@ data:
   input_case: auto                           # → single (temperature auto-probed)
 response: examples/data/synth_response.npz
 wavelength: 171
+scale: log                 # log | linear  intensity scale
 image:
   Npix: 256
   Rmax: 1.5
