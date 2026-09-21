@@ -70,13 +70,18 @@ Hulst / Billings geometry factors `A(r)`, `B(r)` (functions of `Ω`, with
 `sinΩ = R_sun/r`):
 
 ```
-pB = ∫ nₑ(s) · K(r(s)) · dℓ ,   K(r) = σ_e · [(1−u)·A(r) + u·B(r)]
+pB = ∫ nₑ(s) · K(r(s),b) · dℓ
+K(r,b) = σ_e · [(1−u)·A(r) + u·B(r)] · b²/r²
 ```
 
+- `b` — image-plane impact parameter. The factor `b²/r² = sin²χ`, where `χ`
+  is the scattering angle, preferentially weights electrons near the plane of
+  the sky while retaining the full line-of-sight integral.
 - `σ_e = r_e² = 7.95e-26 cm²` — the classical electron radius squared (package
   default). This is the standard van de Hulst / Billings coronal-pB constant: the
-  `A`, `B` factors already carry the angular dependence of the scattering, so the
-  prefactor is `r_e²`, **not** the angle-integrated total cross-section
+  `A`, `B` factors carry the finite-solar-disk angular integration, while
+  `b²/r²` carries the observer scattering-angle dependence. The prefactor is
+  `r_e²`, **not** the angle-integrated total cross-section
   `σ_T = (8π/3) r_e² = 6.65e-25`. Pass `SIGMA_T=6.65e-25` only if your `A, B`
   definitions omit that angular integration.
 - `u` — limb-darkening coefficient (default 0.63).

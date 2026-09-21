@@ -4,7 +4,9 @@ rrt.wl
 Ray-cell (Siddon) intersection integrator for synthetic white-light polarised
 brightness (pB) via Thomson scattering (van de Hulst / Billings coefficients).
 
-pB(pixel) = ∫ n_e(r) · K(r) · dℓ,  with  K(r) = σ_e · [(1-u)·A(r) + u·B(r)].
+pB(pixel) = ∫ n_e(r) · K(r,b) · dℓ, with
+K(r,b) = σ_e · [(1-u)·A(r) + u·B(r)] · b²/r²,
+where b is the image-plane impact parameter.
 
 The boundary-intersection geometry, ``make_edges`` and ``prepare_domain`` are
 imported from :mod:`rrt.geometry` — the single shared core. 
@@ -69,15 +71,18 @@ def _billings_ABCD(r):
 
 
 @njit
-def _pB_kernel(r, U_LIMB, SIGMA_T):
+def _pB_kernel(r, impact2, U_LIMB, SIGMA_T):
     """
-    Polarised brightness kernel K(r):
-        K(r) = SIGMA_T * [ (1 - u)*A(r) + u*B(r) ]
+    Polarised brightness kernel K(r,b):
+        K(r,b) = SIGMA_T * [(1 - u)*A(r) + u*B(r)] * b²/r²
+
+    The final factor is ``sin²(chi)``, where ``chi`` is the scattering angle
+    and ``b`` is the image-plane impact parameter.
     Units: cm²  (scattering constant times dimensionless geometry)
-   
     """
     A, B = _billings_ABCD(r)
-    return SIGMA_T * ((1.0 - U_LIMB)*A + U_LIMB*B)
+    sin2_chi = impact2 / (r * r)
+    return SIGMA_T * ((1.0 - U_LIMB)*A + U_LIMB*B) * sin2_chi
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -103,8 +108,9 @@ def siddon_integrate_pB(
     """
     Siddon ray-cell integrator for polarised brightness (white light).
 
-    Integrand:  pB(pixel) = ∫ ne(r) · K(r) · ds
-    where K(r) = SIGMA_T * [(1-u)*A(r) + u*B(r)]  [cm²]
+    Integrand:  pB(pixel) = ∫ ne(r) · K(r,b) · ds
+    where K(r,b) = SIGMA_T * [(1-u)*A(r) + u*B(r)] * b²/r²
+    and b²/r² = sin²(chi).  [cm²]
 
     Units: [cm⁻³] × [cm²] × [cm] = dimensionless — pB comes out as a brightness
     ratio (relative to the mean solar disk brightness for the standard van de
@@ -205,7 +211,7 @@ def siddon_integrate_pB(
             ne_val = ne_data[ir, it, ip]          # cm⁻³
 
             # Thomson scattering kernel at this 3-D radius
-            K_val  = _pB_kernel(r_m, U_LIMB, SIGMA_T)   # cm²
+            K_val = _pB_kernel(r_m, b2, U_LIMB, SIGMA_T)  # cm²
 
             # Accumulate:  ne [cm⁻³] × K [cm²] × ds [cm]
             pB_pix += ne_val * K_val * ds * Rsun_cm
@@ -239,8 +245,8 @@ def run_siddon_pB(
     """
     Siddon white light polarised brightness pipeline.
 
-    Integrand:   pB = ∫ ne · K(r) · ds
-    K(r) = SIGMA_T * [(1-U_LIMB)*A(r) + U_LIMB*B(r)]
+    Integrand:   pB = ∫ ne · K(r,b) · ds
+    K(r,b) = SIGMA_T * [(1-U_LIMB)*A(r) + U_LIMB*B(r)] * b²/r²
 
     Parameters
     ----------
